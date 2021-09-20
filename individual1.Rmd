@@ -1,0 +1,128 @@
+---
+title: "DS202_Lab2"
+author: "Caroly Coronado- Vargas"
+date: "9/18/2021"
+output: html_document
+---
+
+```{r}
+library(classdata)
+data(choco)
+str(choco)
+```
+
+**1**
+
+*The cocoa percent is normally distributed with a the most cocoa amount count between 65-75 %.There seems to be quite a few outliers which would be considered anything below about 60% and anything above 80%.*
+
+```{r}
+hist(choco$CocoaPercent)
+boxplot(choco$CocoaPercent)
+```
+**2**
+
+**2**
+
+*The higher number of ratings come from Latin American countries.*
+
+```{r}
+a<- table(choco$CountryBeanOrigin)
+sorted_a <- sort(a, decreasing = TRUE)
+barplot(sorted_a[1:10], main = 'Ratings Per Country', cex.names = 0.7,las = 2 )
+```
+
+**3**
+
+*The rating does not depend on the cacao percentage of a chocolate bar because the correlation value is very low (-.1480661). However, the negative correlation means that people rate chocolate bars with less cacao percentage higher, which makes sense, people like sweeter chocolate.*
+
+```{r}
+cor(choco$CocoaPercent,choco$Rating)
+
+plot(choco$CocoaPercent,choco$Rating)
+
+boxplot(choco$CocoaPercent)
+boxplot(choco$Rating)
+
+```
+
+**4**
+
+*Beans originating from Brazil tend to produce creamier chocolate while those from Colombia produce sweeter chocolate. Beans from Brazil tend to produce chocolate that has better characteristics and less negative ones such as gritty, dry etc... The mean rating for Brazil is 3.263 which is higher than the other countries in the last list*
+
+```{r}
+library(tidyverse)
+flavor <- table(choco$Characteristics1)
+length(flavor)
+summary(as.numeric(flavor))
+boxplot(flavor)
+
+flavor_filtered <- flavor[flavor > 50]
+choco_filtered <- filter(choco, Characteristics1 %in% names(flavor_filtered))
+
+country_filtered <- table(choco$CountryBeanOrigin) %>% 
+  sort(decreasing = TRUE) %>%
+  head(10) # select the top 10 countries
+
+choco %>% 
+  filter(Characteristics1 %in% names(flavor_filtered)) %>% # filter flavor
+  filter(CountryBeanOrigin %in% names(country_filtered)) %>% # filter country
+  ggplot() +
+  geom_bar(aes(x = CountryBeanOrigin, fill = Characteristics1), position = 'fill') + # position = 'fill': especially used when showing proportions (all columns add up to 1)
+  coord_flip() # rotate the coordinate
+
+tapply(choco$Rating, choco$CountryBeanOrigin, summary) %>%
+  head(5) # Country list might be too long to show, we keep it to 5
+```
+
+**5**
+
+*I want to use the previous analysis we did above but using the other 2 Characteristics of a chocolate to see which country of origin contains the most favorable characteristics.Based on my findings, If chocolate companies want a nutty profile chocolate bar, they should use beans from Colombia. If they want a rich flavor of Cacao, they should use a blend of bean origins.If they want a floral profile, they should go with beans sourced in Ecuador. Across all three analysis, Brazil has the most favorable traits/profile for chocolate . Other useful analysis would include a comparison of what countries source their cocoa beans from and then compare the average rating per company to determine who produces the best chocolate.*
+
+```{r}
+flavor2 <- table(choco$Characteristics2)
+length(flavor2)
+summary(as.numeric(flavor2))
+boxplot(flavor2)
+
+flavor_filtered2 <- flavor2[flavor2 > 50]
+choco_filtered2 <- filter(choco, choco$Characteristics2 %in% names(flavor_filtered2))
+
+country_filtered2 <- table(choco$CountryBeanOrigin) %>% 
+  sort(decreasing = TRUE) %>%
+  head(10) # select the top 10 countries
+
+choco %>% 
+  filter(Characteristics2 %in% names(flavor_filtered2)) %>% # filter flavor
+  filter(CountryBeanOrigin %in% names(country_filtered2)) %>% # filter country
+  ggplot() +
+  geom_bar(aes(x = CountryBeanOrigin, fill = Characteristics2), position = 'fill') + # position = 'fill': especially used when showing proportions (all columns add up to 1)
+  coord_flip() # rotate the coordinate
+
+tapply(choco$Rating, choco$CountryBeanOrigin, summary) %>%
+  head(5) # Country list might be too long to show, we keep it to 5
+```
+```{r}
+flavor3 <- table(choco$Characteristics3)
+length(flavor3)
+summary(as.numeric(flavor3))
+boxplot(flavor3)
+
+flavor_filtered3 <- flavor3[flavor3 > 50]
+choco_filtered3 <- filter(choco, choco$Characteristics3 %in% names(flavor_filtered3))
+
+country_filtered3 <- table(choco$CountryBeanOrigin) %>% 
+  sort(decreasing = TRUE) %>%
+  head(10) # select the top 10 countries
+
+choco %>% 
+  filter(Characteristics3 %in% names(flavor_filtered3)) %>% # filter flavor
+  filter(CountryBeanOrigin %in% names(country_filtered3)) %>% # filter country
+  ggplot() +
+  geom_bar(aes(x = CountryBeanOrigin, fill = Characteristics3), position = 'fill') + # position = 'fill': especially used when showing proportions (all columns add up to 1)
+  coord_flip() # rotate the coordinate
+
+tapply(choco$Rating, choco$CountryBeanOrigin, summary) %>%
+  head(5) # Country list might be too long to show, we keep it to 5
+```
+
+
